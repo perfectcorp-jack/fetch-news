@@ -2,58 +2,86 @@ import React from 'react';
 import './App.css';
 
 class App extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {
       error: null,
       isLoaded: false,
       results: null,
+      category: '',
     };
+    this.handleSelect = this.handleSelect.bind(this);
+  }
+
+  componentDidMount() {
+    window.addEventListener('scroll', function() {
+      if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+        console.log('you are at the bottom of the page');
+        console.log(this.state.category)
+      }
+    })
   }
 
   // 44bbac4daf4709e837068fed365ea4e3
   // c085361734abb2056c9617f340a42999
 
-  componentDidMount() {
-    fetch("http://api.mediastack.com/v1/news?access_key=8c676a2d2f14a60205b679ba53a4c6fa&categories=health,sports,technology&countries=us&limit=5", {})
-      .then((res) => {
-        return res.json();
-      })
-      .then((data) => {
-        console.log(data);
-        this.setState({
-          isLoaded: true,
-          results: data,
-        });
-      })
-      .catch((error) => {
-        this.setState({
-          isLoaded: true,
-          error,
-        });
+  handlefetch(category) {
+    fetch("http://api.mediastack.com/v1/news?access_key=44bbac4daf4709e837068fed365ea4e3&categories=" + category + "&countries=us&limit=25", {})
+    .then((res) => {
+      return res.json();
+    })
+    .then((data) => {
+      console.log(data);
+      this.setState({
+        isLoaded: true,
+        results: data,
       });
+    })
+    .catch((error) => {
+      this.setState({
+        isLoaded: true,
+        error,
+      });
+    });
+  }
+
+  handleSelect(e) {
+    this.setState({
+      category: e.target.value,
+    });
+    this.handlefetch(e.target.value);
   }
 
   render() {
-    const { error, isLoaded, results } = this.state;
+    const { error, isLoaded, results, category } = this.state;
     if (error) {
       return (
         <div style={{ textAlgin: 'center', padding: 20 }}>Error: {error.message}</div>
       );
     } else if (!isLoaded) {
       return (
-        <div style={{ textAlign: 'center', padding: 20 }}>Loading...</div>
+        <div style={{ textAlign: 'center' }}>
+          <h1 style={{ textAlign: 'center' }}>Please select a category</h1>
+          <select value={category} onChange={this.handleSelect} className='select'>
+            <option disabled value=''>Please select a category...</option>
+            <option value='health'>Health</option>
+            <option value='sports'>Sports</option>
+            <option value='technology'>Technology</option>
+          </select>
+        </div>
       );
     } else {
       return (
         <div>
           <h1 style={{ textAlign: 'center' }}>News</h1>
-          <select style={{ display: 'block', margin: '0 auto', width: 200, height: 30, marginBottom: 20 }}>
-            <option>Health</option>
-            <option>Sports</option>
-            <option>Technology</option>
-          </select>
+          <div style={{ textAlign: 'center' }}>
+            <select value={category} onChange={this.handleSelect} className='select'>
+              <option disabled value=''>Please select a category...</option>
+              <option value='health'>Health</option>
+              <option value='sports'>Sports</option>
+              <option value='technology'>Technology</option>
+            </select>
+          </div>
           {results.data.map((result) => {
             return (
               <div style={{ width: 1000, margin: 'auto' }}>
