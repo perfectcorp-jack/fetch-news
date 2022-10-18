@@ -14,35 +14,41 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    window.addEventListener('scroll', function() {
+    window.addEventListener('scroll', () => {
       if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
         console.log('you are at the bottom of the page');
-        console.log(this.state.category)
+        setTimeout(() => {
+          this.handlefetch(this.state.category);
+        }, 5000);
+        // console.log(this.state.category);
+        // this.handlefetch(this.state.category);
       }
     })
   }
 
-  // 44bbac4daf4709e837068fed365ea4e3
-  // c085361734abb2056c9617f340a42999
+  // 44bbac4daf4709e837068fed365ea4e3 // finish
+  // c085361734abb2056c9617f340a42999 // finish
+  // 48b7b01739d784475ec9b17bd665979b
+  // 89a9652ad732f6521e5fc736c0bf102d
 
   handlefetch(category) {
-    fetch("http://api.mediastack.com/v1/news?access_key=44bbac4daf4709e837068fed365ea4e3&categories=" + category + "&countries=us&limit=25", {})
-    .then((res) => {
-      return res.json();
-    })
-    .then((data) => {
-      console.log(data);
-      this.setState({
-        isLoaded: true,
-        results: data,
+    fetch("http://api.mediastack.com/v1/news?access_key=c085361734abb2056c9617f340a42999&categories=" + category + "&countries=us&limit=25", {})
+      .then((res) => {
+        return res.json();
+      })
+      .then((data) => {
+        console.log(data);
+        this.setState({
+          isLoaded: true,
+          results: data,
+        });
+      })
+      .catch((error) => {
+        this.setState({
+          isLoaded: true,
+          error,
+        });
       });
-    })
-    .catch((error) => {
-      this.setState({
-        isLoaded: true,
-        error,
-      });
-    });
   }
 
   handleSelect(e) {
@@ -82,25 +88,27 @@ class App extends React.Component {
               <option value='technology'>Technology</option>
             </select>
           </div>
-          {results.data.map((result) => {
-            return (
-              <div style={{ width: 1000, margin: 'auto' }}>
-                <div className='block'>
-                  <div className='image'>
-                    {result.image ? <img src={result.image} style={{ borderRadius: 10, width: '100%' }} alt='news' /> : <img src='https://v4.tocas-ui.com/zh-tw/assets/images/16-9.png' style={{ borderRadius: 10, width: '100%' }} alt='news' />}
-                  </div>
-                  <div className='text'>
-                    <span className='date'>{result.published_at.slice(0, 10)}</span> <span className='time'>{result.published_at.slice(11, 19)}</span>｜
-                    <span className='category'>{result.category}</span>｜
-                    <span className='author'>{result.author ? result.author : 'No author'}</span>
-                    <h2>{result.title}</h2>
-                    <p>{result.description}</p>
-                    <a href={result.url} target="_blank" rel="noopener noreferrer">Read More</a>
+          {results.data
+            .sort((a, b) => a.published_at < b.published_at ? 1 : -1) // sort by date descending
+            .map((result) => {
+              return (
+                <div style={{ width: 1000, margin: 'auto' }}>
+                  <div className='block'>
+                    <div className='image'>
+                      {result.image ? <img src={result.image} style={{ borderRadius: 10, width: '100%' }} alt='news' /> : <img src='https://v4.tocas-ui.com/zh-tw/assets/images/1-1.png' style={{ borderRadius: 10, width: '100%' }} alt='news' />}
+                    </div>
+                    <div className='text'>
+                      <span className='date'>{result.published_at.slice(0, 10)}</span> <span className='time'>{result.published_at.slice(11, 19)}</span>｜
+                      <span className='category'>{result.category}</span>｜
+                      <span className='author'>{result.author ? result.author : 'No author'}</span>
+                      <h2>{result.title}</h2>
+                      <p>{result.description}</p>
+                      <a href={result.url} target="_blank" rel="noopener noreferrer">Read More</a>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
       )
     }
