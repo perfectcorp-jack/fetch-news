@@ -1,6 +1,5 @@
 import React from 'react';
 import './App.css';
-import AppendHead from 'react-append-head';
 
 
 class App extends React.Component {
@@ -101,9 +100,6 @@ class App extends React.Component {
     } else {
       return (
         <div>
-          <AppendHead>
-            <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
-          </AppendHead>
           <h1 style={{ textAlign: 'center' }}>News</h1>
           <div style={{ textAlign: 'center' }}>
             <select value={category} onChange={this.handleSelect} className='select'>
