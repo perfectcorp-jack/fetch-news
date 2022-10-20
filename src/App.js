@@ -70,7 +70,7 @@ class App extends React.Component {
   }
 
   handleSelect(e) {
-    const cf = this.state.category && e.target.value === this.state.category;
+    const cf = e.target.value === this.state.category;
     // console.log(cf);
     this.setState({
       category: e.target.value,
