@@ -28,10 +28,11 @@ class App extends React.Component {
   // c085361734abb2056c9617f340a42999 // finish
   // 48b7b01739d784475ec9b17bd665979b 
   // 89a9652ad732f6521e5fc736c0bf102d // finish
+  // 654df2dff4142f5bb53d02cc20ca83fc
 
   handleFetch(category, cf) {
     const url = 'http://api.mediastack.com/v1/news';
-    const apiKey = '?access_key=' + '48b7b01739d784475ec9b17bd665979b';
+    const apiKey = '?access_key=' + '654df2dff4142f5bb53d02cc20ca83fc';
     const categories = `&categories=${category}`;
     const countries = '&countries=us';
     const limit = '&limit=10';
@@ -50,7 +51,7 @@ class App extends React.Component {
         if ((data.data.length > 0) && (cf)) {
           this.setState({
             isLoaded: true,
-            results: this.state.results ? { data: [...this.state.results.data, ...data.data] } : data,
+            results: { data: [...this.state.results.data, ...data.data] },
           });
           // console.log(this.state.offset)
         } else {
