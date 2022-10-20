@@ -18,7 +18,7 @@ class App extends React.Component {
     window.addEventListener('scroll', () => {
       if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
         console.log('you are at the bottom of the page');
-        this.handlefetch(this.state.category, true);
+        this.handleFetch(this.state.category, true);
         window.scrollTo(0, document.body.scrollHeight / 2);
       }
     })
@@ -29,16 +29,16 @@ class App extends React.Component {
   // 48b7b01739d784475ec9b17bd665979b 
   // 89a9652ad732f6521e5fc736c0bf102d // finish
 
-  handlefetch(category, cf) {
+  handleFetch(category, cf) {
     const url = 'http://api.mediastack.com/v1/news';
     const apiKey = '?access_key=' + '48b7b01739d784475ec9b17bd665979b';
     const categories = `&categories=${category}`;
     const countries = '&countries=us';
-    const limit = '&limit=25';
+    const limit = '&limit=10';
     const offset = `&offset=${this.state.offset}`;
     const sort = '&sort=published_desc';
     this.setState({
-      offset: this.state.offset + 25,
+      offset: this.state.offset + 10,
     });
     fetch(url + apiKey + categories + countries + limit + offset + sort, {})
       .then((res) => {
@@ -47,7 +47,7 @@ class App extends React.Component {
       .then((data) => {
         // console.log(data);
         // console.log(this.state.offset);
-        if ((data.data.length > 0) && (this.state.category === category) && (cf)) {
+        if ((data.data.length > 0) && (cf)) {
           this.setState({
             isLoaded: true,
             results: this.state.results ? { data: [...this.state.results.data, ...data.data] } : data,
@@ -75,7 +75,7 @@ class App extends React.Component {
     this.setState({
       category: e.target.value,
     });
-    this.handlefetch(e.target.value, cf);
+    this.handleFetch(e.target.value, cf);
   }
 
   render() {
