@@ -6,7 +6,7 @@ body {
 }
 
 .block {
-  width: 1000px;
+  width: 70%;
   margin: 50px auto;
   padding: 30px;
   border: solid 1px #bbbbbb;
@@ -21,13 +21,15 @@ body {
 }
 
 .image {
-  width: 300px;
+  width: 20%;
   float: left;
+  transition: .35s all;
 }
 
 .text {
-  width: 660px;
+  width: 77%;
   float: right;
+  transition: .35s all;
 }
 
 .time {
@@ -44,4 +46,41 @@ body {
 
 .author {
   margin-left: 5px;
+}
+
+@media (max-width: 1399.98px) {
+  .image {
+    width: 25%;
+    transition: .35s all;
+  }
+
+  .text {
+    width: 70%;
+    transition: .35s all;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .image {
+    width: 35%;
+    transition: .35s all;
+  }
+
+  .text {
+    width: 58%;
+    transition: .35s all;
+  }
+}
+
+@media (max-width: 576.98px) {
+  .image {
+    width: 100%;
+    transition: .35s all;
+  }
+
+  .text {
+    padding-top: 15px;
+    width: 100%;
+    transition: .35s all;
+  }
 }

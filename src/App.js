@@ -1,5 +1,6 @@
 import React from 'react';
 import './App.css';
+import Dropdown from './Dropdown';
 
 class App extends React.Component {
   constructor(props) {
@@ -8,50 +9,51 @@ class App extends React.Component {
       error: null,
       isLoaded: false,
       results: null,
-      category: '',
       offset: 0,
+      category: '',
     };
     this.handleSelect = this.handleSelect.bind(this);
   }
 
   componentDidMount() {
-    window.addEventListener('scroll', () => {
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-        console.log('you are at the bottom of the page');
-        this.handleFetch(this.state.category, true);
-        window.scrollTo(0, document.body.scrollHeight / 2);
-      }
-    })
+    window.addEventListener('scroll', this.handleScroll);
   }
 
-  // 44bbac4daf4709e837068fed365ea4e3 // finish
-  // c085361734abb2056c9617f340a42999 // finish
-  // 48b7b01739d784475ec9b17bd665979b 
-  // 89a9652ad732f6521e5fc736c0bf102d // finish
-  // 654df2dff4142f5bb53d02cc20ca83fc
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.handleScroll);
+  }
 
-  handleFetch(category, cf) {
+  handleScroll = () => {
+    if (window.innerHeight + document.documentElement.scrollTop >= document.body.offsetHeight) {
+      console.log('you are at the bottom of the page');
+      window.removeEventListener('scroll', this.handleScroll);
+      this.handleFetch(this.state.category, true).then(() => {
+        window.addEventListener('scroll', this.handleScroll);
+      });
+    };
+  };
+
+  handleFetch(category, isCategorySame) {
     const url = 'http://api.mediastack.com/v1/news';
-    const apiKey = '?access_key=' + '654df2dff4142f5bb53d02cc20ca83fc';
+    const apiKey = '?access_key=' + '499e8f0589a5ec85f200c07236570b88';
     const categories = `&categories=${category}`;
     const countries = '&countries=us';
     const limit = '&limit=10';
-    const offset = `&offset=${this.state.offset}`;
+    // const offset = `&offset=${this.state.offset}`;
+    const offset = isCategorySame ? `&offset=${this.state.offset}` : '&offset=0';
     const sort = '&sort=published_desc';
-    this.setState({
-      offset: this.state.offset + 10,
-    });
-    fetch(url + apiKey + categories + countries + limit + offset + sort, {})
+    return fetch(url + apiKey + categories + countries + limit + offset + sort, {})
       .then((res) => {
         return res.json();
       })
       .then((data) => {
         // console.log(data);
         // console.log(this.state.offset);
-        if ((data.data.length > 0) && (cf)) {
+        if ((data.data.length > 0) && (isCategorySame)) {
           this.setState({
             isLoaded: true,
             results: { data: [...this.state.results.data, ...data.data] },
+            offset: this.state.offset + 10,
           });
           // console.log(this.state.offset)
         } else {
@@ -70,13 +72,13 @@ class App extends React.Component {
       });
   }
 
-  handleSelect(e) {
-    const cf = e.target.value === this.state.category;
-    // console.log(cf);
+  handleSelect = (e) => {
+    const isCategorySame = e.target.value === this.state.category;
+    // console.log(isCategorySame);
     this.setState({
       category: e.target.value,
     });
-    this.handleFetch(e.target.value, cf);
+    this.handleFetch(e.target.value, isCategorySame);
   }
 
   render() {
@@ -85,23 +87,11 @@ class App extends React.Component {
       return (
         <div style={{ textAlgin: 'center', padding: 20 }}>Error: {error.message}</div>
       );
-    } else if (!isLoaded) {
-      return (
-        <div style={{ textAlign: 'center' }}>
-          <h1 style={{ textAlign: 'center' }}>Please select a category</h1>
-          <select value={category} onChange={this.handleSelect} className='select'>
-            <option disabled value=''>Please select a category...</option>
-            <option value='health'>Health</option>
-            <option value='sports'>Sports</option>
-            <option value='technology'>Technology</option>
-          </select>
-        </div>
-      );
     } else {
       return (
         <div>
-          <h1 style={{ textAlign: 'center' }}>News</h1>
           <div style={{ textAlign: 'center' }}>
+          {!isLoaded ? <h1 style={{ textAlign: 'center' }}>Please select a category</h1> : <h1 style={{ textAlign: 'center' }}>News</h1>}
             <select value={category} onChange={this.handleSelect} className='select'>
               <option disabled value=''>Please select a category...</option>
               <option value='health'>Health</option>
@@ -109,10 +99,10 @@ class App extends React.Component {
               <option value='technology'>Technology</option>
             </select>
           </div>
-          {results.data
-            .map((result) => {
+          {isLoaded && results.data
+            .map((result, index) => {
               return (
-                <div style={{ width: 1000, margin: 'auto' }}>
+                <div style={{ width: '100%', margin: '0 auto' }} key={index}>
                   <div className='block'>
                     <div className='image'>
                       {result.image ? <img src={result.image} style={{ borderRadius: 10, width: '100%' }} alt='news' /> : <img src='https://v4.tocas-ui.com/zh-tw/assets/images/1-1.png' style={{ borderRadius: 10, width: '100%' }} alt='news' />}
@@ -122,7 +112,7 @@ class App extends React.Component {
                       <span className='time'>{result.published_at.slice(11, 19)}</span>｜
                       <span className='category'>{result.category}</span>｜
                       <span className='author'>{result.author ? result.author : 'No author'}</span>
-                      <h2>{result.title}</h2>
+                      <h2>#{index + 1} -- {result.title}</h2>
                       <p>{result.description}</p>
                       <a href={result.url} target="_blank" rel="noopener noreferrer">Read More</a>
                     </div>
