@@ -8,9 +8,9 @@ class App extends React.Component {
       error: null,
       isLoaded: false,
       results: null,
-      offset: 0,
       category: '',
     };
+    this.offset = 0;
     this.handleSelect = this.handleSelect.bind(this);
   }
 
@@ -34,33 +34,29 @@ class App extends React.Component {
 
   handleFetch(category, isCategorySame) {
     const url = 'http://api.mediastack.com/v1/news';
-    const apiKey = '?access_key=' + '499e8f0589a5ec85f200c07236570b88';
+    const apiKey = '?access_key=' + '0e3570ad1bef955fe4f580304592e1bb';
     const categories = `&categories=${category}`;
     const countries = '&countries=us';
     const limit = '&limit=10';
-    // const offset = `&offset=${this.state.offset}`;
-    const offset = isCategorySame ? `&offset=${this.state.offset}` : '&offset=0';
+    const offset = isCategorySame ? `&offset=${this.offset += 10}` : `&offset=${this.offset = 0}`;
     const sort = '&sort=published_desc';
     return fetch(url + apiKey + categories + countries + limit + offset + sort, {})
       .then((res) => {
         return res.json();
       })
       .then((data) => {
-        // console.log(data);
-        // console.log(this.state.offset);
         if ((data.data.length > 0) && (isCategorySame)) {
           this.setState({
             isLoaded: true,
             results: { data: [...this.state.results.data, ...data.data] },
-            offset: this.state.offset + 10,
           });
-          // console.log(this.state.offset)
+          // console.log(this.offset);
         } else {
           this.setState({
             isLoaded: true,
             results: data,
-            offset: 0,
           });
+          // console.log(this.offset);
         }
       })
       .catch((error) => {
